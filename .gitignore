@@ -1,8 +1,0 @@
-.idea
-
-cmake-build*
-build/
-
-#private client authentication files
-client-crt.pem
-client-key.pem
