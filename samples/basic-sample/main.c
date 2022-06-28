@@ -313,7 +313,7 @@ void ReadSensordata(void) {
 
     char* NowTime = iotcl_iso_timestamp_now(); 	// time format : YYYY-MM-DDTHH:MM:SS.FFFZ eg. 2020-01-21T22:57:59.968Z
     char* sensors_data = NULL;
-    cJSON* obj, *obj2, *obj3, * root_array, * data, * data2, * data3, * Gy;
+    cJSON* obj, *obj2, *obj3, * root_array, * sub1_array, * sub2_array, * data, * data2, * data3, * Gy;
      // For Gateway Device
           /**
        * Gateway device input data format Example:
@@ -338,8 +338,42 @@ void ReadSensordata(void) {
        cJSON_AddStringToObject(obj, "uniqueId", IOTCONNECT_DUID);
        cJSON_AddStringToObject(obj, "time", NowTime);
        cJSON_AddItemToObject(obj, "data", data=cJSON_CreateObject());
-       cJSON_AddStringToObject(data, "version", APP_VERSION);
-       cJSON_AddNumberToObject(data, "cpu", 3.123);
+       //cJSON_AddStringToObject(data, "version", APP_VERSION);
+       //cJSON_AddNumberToObject(data, "cpu", 3.123);
+
+       bool bb = true;
+       cJSON_AddBoolToObject(data, "BBoolean", bb);
+       cJSON_AddNumberToObject(data, "IInt", 0);//LLong
+       cJSON_AddStringToObject(data, "SString", "hello");
+       cJSON_AddNumberToObject(data, "LLong", 1234567890);
+       cJSON_AddNumberToObject(data, "DDecimal", 3.123);//
+       cJSON_AddNumberToObject(data, "BBit", 1);//
+       cJSON_AddStringToObject(data, "DDate", "2022-04-25");//
+       cJSON_AddStringToObject(data, "DT", "2022-05-02T12:00:00.000Z");//TTime
+       sub2_array = cJSON_CreateArray();
+       cJSON_AddItemToArray(sub2_array, cJSON_CreateNumber(-0.203247));
+       cJSON_AddItemToArray(sub2_array, cJSON_CreateNumber(26.450753));
+       cJSON_AddItemToObject(data, "LLT", sub2_array);
+       
+
+       cJSON_AddStringToObject(data, "TTime", "05:05:05");
+       cJSON_AddItemToObject(data, "OObject", Gy = cJSON_CreateObject());
+       cJSON_AddNumberToObject(Gy, "bbit", 0);
+       cJSON_AddBoolToObject(Gy, "bboolean", false);
+       cJSON_AddNumberToObject(Gy, "ddecimal", 33.65);//
+       cJSON_AddStringToObject(Gy, "ddate", "2022-05-02T12:00:00.000Z" );//
+       cJSON_AddStringToObject(Gy, "ddt", "2022-06-22");//
+       cJSON_AddNumberToObject(Gy, "iinteger", 148);//llong
+       cJSON_AddNumberToObject(Gy, "llong", 1234567890);//
+       cJSON_AddStringToObject(Gy, "sstring", "softweb");//ttime
+       cJSON_AddStringToObject(Gy, "ttime", "2022-04-25");//llong
+
+       /* https://alirumane.github.io/2019/03/17/working-with-json-data-in-c */
+       sub1_array = cJSON_CreateArray();
+       cJSON_AddItemToArray(sub1_array, cJSON_CreateNumber(-0.203247));
+       cJSON_AddItemToArray(sub1_array, cJSON_CreateNumber(26.450755));
+       cJSON_AddItemToObject(Gy, "llt", sub1_array);
+
        /*
        	obj2 = cJSON_CreateObject();
        	cJSON_AddItemToArray(root_array,obj2);
@@ -422,7 +456,7 @@ int main(int argc, char* argv[])
     config->gettwin_cb = gettwin;
 
     // run a dozen connect/send/disconnect cycles with each cycle being about a minute
-    for (int j = 0; j < 10; j++) {
+    for (int j = 0; j < 10000; j++) {
         int ret = iotconnect_sdk_init();
         if (0 != ret) {
             fprintf(stderr, "IoTConnect exited with error code %d\n", ret);
@@ -438,7 +472,7 @@ int main(int argc, char* argv[])
         {
             ReadSensordata();
             //publish_telemetry();
-            // repeat approximately evey ~5 seconds
+            // repeat approximately evey ~1 seconds
             for (int k = 0; k <1; k++) 
             {
                 iotconnect_sdk_receive();
